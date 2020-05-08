@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Noto+Serif+TC:wght@900&display=swap');
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    body{
+        background: linear-gradient(to left,black,white);
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .wrap{
+        width: 640px;
+        text-align: center;
+    }
+
+    h1{
+        
+        display: inline;
+        box-sizing: border-box;
+        border-right:2px solid;
+        padding: 3px 0;
+        
+        font-family: 'Lobster', cursive;
+font-family: 'Noto Serif TC', serif;   
+    }
+    h2{
+        display: inline;
+        padding: 3px 0;
+        
+        font-family: 'Roboto';
+    }
+    .animarions{
+         animation: test 1s infinite steps(1,end);
+    }
+    @keyframes test{
+        0%{
+            
+        }
+        50%
+        {
+            border-right-color: transparent;
+        }
+
+    }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1 id="test"></h1>
+        <br>
+        <br>
+        <h2 id="test1"></h2>
+    </div>
+ <script>    
+ function text(option){
+        let count=0;
+        let data={
+            el:document.querySelector(`${option.el}`),
+            time:option.time,
+            text:option.text,
+            two:null,
+        }
+        function print(res)
+        {
+            if(count<data.text.length)
+            {
+                data.el.append(data.text.charAt(count));
+                count++;
+                setTimeout(print,data.time);
+
+            }
+            else
+            {
+                
+                    if(two!==null)
+                    {
+                        data.el.style.borderRight="2px solid transparent";
+                        data.el=document.querySelector(`${two.el}`);
+                        data.text=two.text;
+                        count=0;
+                        setTimeout(print,data.time);
+                        data.el.style.borderRight ="2px solid black";
+                        two=null;
+                    }
+                    else
+                    {
+                        data.el.classList.add("animarions");
+                    }
+                
+            }
+        }
+
+    this.settime=function(res=null){
+        two=res;
+         setTimeout(print,data.time);
+    };
+
+ }
+ let option={
+     el:"#test",
+     text:"大家好 我的名字叫小明 來自台灣",
+     time:200,
+ }
+ let a=new text(option);
+ 
+    a.settime({
+    el:"#test1",
+     text:"Hello Puilun,Nice to meet you,My name is tom wu",
+    });
+
+</script>
+</body>
+</html>
