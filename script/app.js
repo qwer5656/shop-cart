@@ -1,3 +1,15 @@
+///api server
+
+const client = contentful.createClient({
+  // This is the space ID. A space is like a project folder in Contentful terms
+  space: "pt7zaz9aci4c",
+  // This is the access token for this space. Normally you get both ID and the token in the Contentful web app
+  accessToken: "JjfKK_5WWcjfc9Mvwz46Lpdz6PH5-bURDeoBez4RMO0"
+});
+
+
+
+
 //variables
 
 
@@ -18,14 +30,15 @@ let buttonDom = [];
 class Products {
     async getProducts() {
         try {
-            let result = await fetch('products.json');
-            let data = await result.json();
-
-            let productsmap = data.items.map((item) => {
+            let resulat=await client.getEntries({
+                content_type: 'tom'
+            });
+            console.log(resulat);
+            let productsmap = resulat.items.map((item) => {
                 let { id } = item.sys;
-                let { title, price } = item.fields;
+                let { name, price } = item.fields;
                 let { url } = item.fields.image.fields.file;
-                return { id, title, price, url };
+                return { id, name, price, url };
             })
             return productsmap;
         }
@@ -50,7 +63,7 @@ class UI {
                     </i>
                 </button>
             </div>
-            <h3>${element.title}</h3>
+            <h3>${element.name}</h3>
             <h4>$${element.price}</h4>
         </article>`;
         });
@@ -58,7 +71,8 @@ class UI {
     };
     getBagBt() {
         let buttons = document.querySelectorAll(".bag-btn");
-        buttonDom = buttons;
+        buttonDom = Array.from(buttons);
+        
         console.log(buttonDom);
         buttons.forEach(button => {
             let id = button.dataset.id;
@@ -102,7 +116,7 @@ class UI {
         div.classList.add("cart-item");
         div.innerHTML = `<img src="${item.url}" alt="product">
         <div>
-            <h3>${item.title}</h3>
+            <h3>${item.name}</h3>
             <h5>${item.price}</h5>
             <span class="remove-item" data-id=${item.id}>remove</span>
         </div>
@@ -137,11 +151,51 @@ class UI {
         clearCarBtn.addEventListener("click", () => {
             this.clearCart();
         });
+        cartContent.addEventListener("click",(e)=>{
+            let target=e.target;
+            if(target.classList.contains("remove-item"))
+            {
+                let id=target.dataset.id;
+                cartContent.removeChild(e.target.parentElement.parentElement);
+                this.removeItem(id);
+            }
+            else if(target.classList.contains("fa-chevron-up"))
+            {
+                let id=target.dataset.id;                
+                let temp=cart.find((e)=>e.id===id);
+                temp.amount=temp.amount+1;
+                 storage.saveCart(cart);
+                 target.nextElementSibling.innerText=temp.amount;
+                 this.setCartValues(cart);
+            }
+            else if(target.classList.contains("fa-chevron-down"))
+            {
+                let id=target.dataset.id;                
+                let temp=cart.find((e)=>e.id===id);
+                if(temp.amount==1)
+                {
+                    cartContent.removeChild(e.target.parentElement.parentElement);
+                    this.removeItem(id);
+                }
+                else
+                {
+                temp.amount=temp.amount-1;
+                storage.saveCart(cart);
+                this.setCartValues(cart);
+                target.previousElementSibling.innerText=temp.amount;
+                }
+            }
+        });
     }
     clearCart() {
 
         let cartItems = cart.map(item => item.id);
         cartItems.forEach(id => this.removeItem(id));
+        while(cartContent.children.length>0)
+        {
+            cartContent.removeChild(cartContent.children[0]);
+        }
+        this.hideCart();
 
     }
     removeItem(id) {
